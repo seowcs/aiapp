@@ -1,16 +1,20 @@
 from flask import Flask, request
-from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS, cross_origin
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 import pytesseract
 from PIL import Image
 from text_to_docred import TextInputToDocredPipeline
 from sgnlp.models.lsr import LsrModel, LsrConfig, LsrPreprocessor, LsrPostprocessor
-from py2neo import Graph
+from py2neo import Graph, NodeMatcher
 from graphdb import graph_query
 graph = Graph("bolt://54.173.227.28:7687", auth=("neo4j", "purpose-accessories-crowds"))
+matcher = NodeMatcher(graph)
 text2docred_pipeline = TextInputToDocredPipeline()
 
-user_label = 'User1'
-concept_label = 'Concept1'
 rel2id_path = './model_config/rel2id.json'
 word2id_path = './model_config/word2id.json'
 ner2id_path = './model_config/ner2id.json'
@@ -19,11 +23,45 @@ rel_info_path = './model_config/rel_info.json'
 
 app = Flask(__name__)
 CORS(app)
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
+app.config["JWT_SECRET_KEY"] = "jwtkey"
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 class GetText(object):
 
     def __init__(self, file):
         self.file = pytesseract.image_to_string(Image.open(file))
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    email = data['email']
+    if matcher.match("USER", name=username).first() != None:
+        return 'Username already exists!', 400
+    pw_hash = bcrypt.generate_password_hash(password).decode('utf8')
+    create_user_node = f"CREATE (u:USER{{name:'{username}', password:'{pw_hash}', email:'{email}'}})"
+    print(create_user_node)
+    graph.run(create_user_node)
+    response = {'message': 'User registration successful'}
+    
+    return response
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    print(data)
+    username = data['username']
+    password = data['password']
+    match = matcher.match("USER", name=username).first()
+    if match == None:
+        return 'Username does not exist',400
+    if bcrypt.check_password_hash(match['password'],password) == False:
+        return 'Wrong password',400
+    access_token = create_access_token(identity=username)
+
+    return  {'access_token': access_token}
 
 @app.route('/image', methods=['GET', 'POST'])
 def get_image():
@@ -34,8 +72,13 @@ def get_image():
     return {'text': textObject.file}
 
 @app.route('/extract', methods=['POST'])
+@jwt_required()
 def relation_extraction():
+    
     document = request.json['text']
+    username = get_jwt_identity()
+    concept_name = request.json['concept']
+    private = True
     print(document)
     docred_doc = text2docred_pipeline.preprocess(document)
     print('Formatted to DocRed ')
@@ -74,8 +117,8 @@ def relation_extraction():
         i['relation'] = newrs
         newrel.append(i)
     print(newrel)
-    graph_query(graph,user_label,concept_label,entity_list,newrel)
+    graph_query(graph,username,concept_name,private, document,entity_list,newrel)
     return 'hi'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(port=5000)
