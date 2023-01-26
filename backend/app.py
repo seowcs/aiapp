@@ -78,7 +78,8 @@ def relation_extraction():
     document = request.json['text']
     username = get_jwt_identity()
     concept_name = request.json['concept']
-    private = True
+    private = request.json['private']
+    print(private)
     print(document)
     docred_doc = text2docred_pipeline.preprocess(document)
     print('Formatted to DocRed ')
