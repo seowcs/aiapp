@@ -19,7 +19,7 @@ const Navbar = ({position}:any) => {
       blur='10.5px' borderRadius='10px' border='1px solid rgba( 255, 255, 255, 0.18 )'
       mt='5' py='3' px='5' justify='space-between' zIndex='2' position={position}>
         <Flex>
-          <Text color='whitesmoke'>Logo</Text>
+          <Text color='whitesmoke'>GraphNet</Text>
         </Flex>
         {!currentUser &&
         <Flex w='40%' justify='space-between'>  

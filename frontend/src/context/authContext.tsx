@@ -10,7 +10,7 @@ export const AuthContext = createContext<any>({});
 export const AuthContextProvider = ({children}: Props) => {
     const [currentUser, setCurrentUser] = useState<string|null>(sessionStorage.getItem('user')||null)
     const [token, setToken] = useState<string|null>(sessionStorage.getItem('user')||null)
-
+    const [currentConcept, setCurrentConcept] = useState<string|null>(null)
     const login = async(input:any) => {
     const config = {
         headers: {
@@ -38,7 +38,7 @@ export const AuthContextProvider = ({children}: Props) => {
     }, [])
     
     return(
-        <AuthContext.Provider value={{currentUser, token, login,logout}}>
+        <AuthContext.Provider value={{currentUser, token, currentConcept, login,logout, setCurrentConcept}}>
             {children}
         </AuthContext.Provider>
     )

@@ -9,7 +9,7 @@ import { Flex, Spacer, Text, Button, ButtonGroup, FormLabel, Input,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay, useDisclosure  } from '@chakra-ui/react'
+  AlertDialogOverlay, useDisclosure, Checkbox, useCheckbox  } from '@chakra-ui/react'
 import {FocusableElement} from '@chakra-ui/utils'
 import { RiUpload2Fill } from "react-icons/ri";
 import background from '../assets/images/newbg.svg'
@@ -20,10 +20,11 @@ import { AuthContext } from "../context/authContext";
 import Navbar from '../components/Navbar';
 
 const Home = () => {
-  const {currentUser, token} = useContext(AuthContext)
+  const {currentUser, token, currentConcept, setCurrentConcept} = useContext(AuthContext)
   const [file, setFile] = useState<File | null>(null)
   const [parsedText, setParsedText] = useState(null)
   const [concept, setConcept] = useState<string|null>(null)
+  const [privacy, setPrivacy] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement|FocusableElement>(null)
 
@@ -82,9 +83,15 @@ const Home = () => {
   const sendText = async () =>{
     const newText = quill.getText();
     console.log(newText);
-    await axios.post('http://localhost:5000/extract',
-    {'text':newText,
-      'concept':concept}, config)
+    try {
+      await axios.post('http://localhost:5000/extract',
+      {'text':newText,
+      'concept':concept,
+      'private': privacy}, config)
+    } catch (error) {
+      console.log(error)
+    }
+    setCurrentConcept(concept)
   }
 
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -309,12 +316,13 @@ const Home = () => {
     
 
       <Flex className='textbox' flexDir='column'>
-      <Input placeholder='Concept Title' mb={5} variant='flushed' _placeholder={{color:'whitesmoke'}} 
+      <Input placeholder='Concept Title' mb={5} variant='flushed' _placeholder={{color:'whitesmoke', fontWeight:500}} 
       onChange={(e)=>setConcept(e.target.value)} color='whitesmoke'/>
-      <div style={{ width: 650, height: '600px', background:'white'}}>
+      <div style={{ width: 650, height: '550px', background:'white'}}>
       <div ref={quillRef} />
       
     </div>
+    <Checkbox size='lg' color='whitesmoke' onChange={(e)=>setPrivacy(e.target.checked)} mt={5}>Private</Checkbox>
     <Button    
     justifyContent="center"
     alignSelf="center"
