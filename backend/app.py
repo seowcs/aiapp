@@ -89,6 +89,7 @@ def relation_extraction():
                                                     pred_threshold=PRED_THRESHOLD)
     # Load model
     config = LsrConfig.from_pretrained('https://storage.googleapis.com/sgnlp/models/lsr/v2/config.json')
+    #cuda or not
     model = LsrModel.from_pretrained('https://storage.googleapis.com/sgnlp/models/lsr/v2/pytorch_model.bin', config=config).to("cuda")
     model.eval()
 

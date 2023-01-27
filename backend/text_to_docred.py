@@ -11,6 +11,7 @@ class TextInputToDocredPipeline:
     """
 
     def __init__(self):
+        #cuda or not
         self.ner = Predictor.from_path(
             "https://storage.googleapis.com/allennlp-public-models/fine-grained-ner.2020-06-24.tar.gz"
         , cuda_device=0)
