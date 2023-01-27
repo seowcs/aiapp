@@ -111,7 +111,7 @@ const Home = () => {
   console.log('token: ', token)
 
   return (
-    <Flex className="app" flexDir='column' align='center' width='100%' h='100vh' bgImg={background} bgPosition="center"
+    <Flex className="app" flexDir='column' align='center' width='100%' bgImg={background} bgPosition="center"
     bgRepeat="no-repeat"
     bgSize="cover">
               <Particles
@@ -318,7 +318,7 @@ const Home = () => {
       <Flex className='textbox' flexDir='column'>
       <Input placeholder='Concept Title' mb={5} variant='flushed' _placeholder={{color:'whitesmoke', fontWeight:500}} 
       onChange={(e)=>setConcept(e.target.value)} color='whitesmoke'/>
-      <div style={{ width: 650, height: '550px', background:'white'}}>
+      <div style={{ width: 650, height: '500px', background:'white', borderRadius:'2%'}}>
       <div ref={quillRef} />
       
     </div>
@@ -334,6 +334,7 @@ const Home = () => {
               py={[2, 3, 4]}
               mx="0"
               mt='5'
+              mb={8}
               border="2px"
               borderColor="#39FF14"
               onClick={sendText}

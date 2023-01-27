@@ -4,7 +4,7 @@ import App from './App';
 import { ChakraProvider } from '@chakra-ui/react'
 import {Neo4jProvider, createDriver} from 'use-neo4j'
 import { AuthContextProvider } from './context/authContext';
-const driver = createDriver('bolt', '54.173.227.28', 7687, 'neo4j', 'purpose-accessories-crowds')
+const driver = createDriver('neo4j+s', '2db082e7.databases.neo4j.io', 7687, 'neo4j', 'seowcsneo4j')
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
