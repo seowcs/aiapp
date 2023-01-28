@@ -11,6 +11,9 @@ export const AuthContextProvider = ({children}: Props) => {
     const [currentUser, setCurrentUser] = useState<string|null>(sessionStorage.getItem('user')||null)
     const [token, setToken] = useState<string|null>(sessionStorage.getItem('user')||null)
     const [currentConcept, setCurrentConcept] = useState<string|null>(null)
+    const [conceptsQuery, setConceptsQuery] = useState(sessionStorage.getItem('conceptsQuery')||'MATCH (c:CONCEPT{name:123}) return (c)')
+    const [searchTerm, setSearchTerm] = useState(sessionStorage.getItem('communitySearchTerm')||'')
+    
     const login = async(input:any) => {
     const config = {
         headers: {
@@ -38,7 +41,8 @@ export const AuthContextProvider = ({children}: Props) => {
     }, [])
     
     return(
-        <AuthContext.Provider value={{currentUser, token, currentConcept, login,logout, setCurrentConcept}}>
+        <AuthContext.Provider value={{currentUser, token, currentConcept, login,logout, setCurrentConcept, conceptsQuery,setConceptsQuery,
+        searchTerm, setSearchTerm}}>
             {children}
         </AuthContext.Provider>
     )

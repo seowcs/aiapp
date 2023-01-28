@@ -9,6 +9,8 @@ import Navbar from "../components/Navbar";
 import Draggable from 'react-draggable';
 import { AuthContext } from "../context/authContext";
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 interface NodeObj {
   id: number,
   name:string,
@@ -40,25 +42,29 @@ interface graphNode  {
 }
 
 function Graph() {
+
+  const navigate = useNavigate()
   const [mousePos, setMousePos] = useState({x:0,y:0});
   const [offsetPos, setOffsetPos] = useState({x:0,y:0});
   const [showOptions, setShowOptions] = useState(false)
   const [option, setOption] = useState('text')
   const [optionsConceptsArr, setOptionsConceptsArr] = useState([''])
-  const [searchTerm, setSearchTerm] = useState('')
+  const [graphSearchTerm, setGraphSearchTerm] = useState('')
   const [conceptText, setConceptText] = useState('')
   const [nodeName, setNodeName] = useState('')
   const filteredConceptsArr = optionsConceptsArr.filter((c)=>
-    c.toLowerCase().includes(searchTerm))
+    c.toLowerCase().includes(graphSearchTerm))
   //improve code
 
 
-  const {currentUser, token, currentConcept, setCurrentConcept} = useContext(AuthContext)
+  const {currentUser, token, currentConcept, setCurrentConcept,setSearchTerm} = useContext(AuthContext)
   //change the hardcode
+  const user = 'User 1'
+  const concept = 'Concept 3'
 
-  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:'user2-concept1'}) RETURN (e)`
-  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:'user2-concept1'})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
-  const conceptQuery = `MATCH (c:CONCEPT{name:'user2-concept1'}) RETURN c`
+  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'}) RETURN (e)`
+  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
+  const conceptQuery = `MATCH (c:CONCEPT{name:'${user}-${concept}'}) RETURN c`
   const nodes = useReadCypher(nodesQuery).records
   const edges = useReadCypher(edgesQuery).records
   const conceptObj = useReadCypher(conceptQuery)
@@ -81,7 +87,8 @@ function Graph() {
       //dont hardcode this
       return cArray[0] == 'User 1' 
     })
-    const conceptNames = userConcepts.map((c:any)=>c.split('-')[1])
+    let conceptNames = userConcepts.map((c:any)=>c.split('-')[1])
+    
     const node_obj = {id:node.identity.low, name:node.properties.name, group:node.labels[0], concepts: conceptNames}
     nodes_arr.push(node_obj)
   }
@@ -132,7 +139,7 @@ function Graph() {
 
       {option === 'concepts' && 
       <Flex flexDir='column' >
-        <Input size='sm' placeholder='Search related concepts' width='95%' mb={3} onChange={(e)=>setSearchTerm(e.target.value)}/>
+        <Input size='sm' placeholder='Search related concepts' width='95%' mb={3} onChange={(e)=>setGraphSearchTerm(e.target.value)}/>
       <List spacing={2}>
         {filteredConceptsArr.map((c:any, index)=>(<ListItem key={index} color='blue'><ListIcon as={ExternalLinkIcon} color='blue'/><Link to='#'>{c}</Link></ListItem>))}
       </List>
@@ -141,7 +148,11 @@ function Graph() {
       {option === 'community' &&
       <Flex flexDir='column' justify='center' align='center'>
         <Text textAlign='center' mt={6} mb={3}>Find other users that have {nodeName} in their graphs!</Text>
-        <Link to='/community'><Button colorScheme='green' rightIcon={<ExternalLinkIcon/>}>Community</Button></Link>
+        <Button colorScheme='green' rightIcon={<ExternalLinkIcon/>} onClick={()=>{
+          sessionStorage.setItem('communitySearchTerm', nodeName)
+          setSearchTerm(nodeName)
+          navigate('/community')}
+          }>Community</Button>
         </Flex>}
       
     </Box>
@@ -177,7 +188,7 @@ function Graph() {
   nodeThreeObjectExtend={true}
   onNodeClick={(node,e)=>{
     setMousePos({'x':e.clientX-offsetPos.x,'y':e.clientY-offsetPos.y})
-    setOptionsConceptsArr((node as graphNode).concepts)
+    setOptionsConceptsArr((node as graphNode).concepts.filter(c => c !== concept))
     setShowOptions(true)
     setNodeName((node as graphNode).name)
   }}

@@ -15,12 +15,21 @@ import {
   Box,
   HStack
 } from "@chakra-ui/react";
-
+import {useReadCypher} from 'use-neo4j'
 import { SearchIcon } from "@chakra-ui/icons";
 import background from '../assets/images/newbg.svg'
 import Navbar from '../components/Navbar';
 import ConceptCard from '../components/ConceptCard';
 const GraphsPage = () => {
+  //change hardcode
+  const user = 'User 1'
+  const conceptsQuery = `MATCH (c:CONCEPT)-[:CU]->(u:USER{name:'${user}'}) RETURN c`
+  const conceptsRecords = useReadCypher(conceptsQuery).records
+  const conceptsArr = conceptsRecords?.map((r)=>{return {name:r.get(0).properties.name,private:r.get(0).properties.private, id:r.get(0).identity.low
+    }})
+  
+  
+
   const arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
   const [currentPage, setCurrentPage] = useState(1)
   const [postsPerPage, setPostsPerPage] = useState(8)
@@ -28,14 +37,16 @@ const GraphsPage = () => {
   const lastIndex = currentPage * postsPerPage
   const firstIndex = lastIndex - postsPerPage
   // fix this aft connecting to backend
-  // const searchedArr = arr.filter(c=>c.name.toLowerCase().includes(searchTerm))
-  const pageArr = arr.slice(firstIndex, lastIndex)
+  const searchedArr = conceptsArr?.filter(c=> c.name.split('-')[1].toLowerCase().includes(searchTerm))
+  console.log(searchedArr)
+  const pageArr = searchedArr?.slice(firstIndex, lastIndex)
 
   let pages = []
-  for(let i=1; i<=Math.ceil(arr.length/postsPerPage) ; i++) {
+  if (searchedArr) {
+  for(let i=1; i<=Math.ceil(searchedArr?.length /postsPerPage) ; i++) {
     pages.push(i)
-  }
-  console.log(pageArr)
+  } }
+  
   return (
     <Flex className="app" flexDir='column' align='center' minHeight='100vh' width='100%' bgImg={background} bgPosition="center"
     bgRepeat="no-repeat"
@@ -50,7 +61,7 @@ const GraphsPage = () => {
       <SimpleGrid mt={8} columns={4} spacing={10}>
         {
           //convert privacy from bool in neo4j to string
-          pageArr.map((c:number)=><ConceptCard id={c} name={`Concept ${c}`} privacy='true'/>)
+          pageArr?.map((c:any)=><ConceptCard id={c.id} name={c.name.split('-')[1]} privacy={c.private.toString()}/>)
         }
       
       

@@ -37,7 +37,7 @@ const Home = () => {
     ],
   };
 
-  const placeholder = 'Parsed text goes here...';
+  const placeholder = 'Text goes here...';
 
   const formats = ['bold', 'italic', 'underline', 'strike'];
 
