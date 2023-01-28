@@ -111,7 +111,7 @@ const Home = () => {
   console.log('token: ', token)
 
   return (
-    <Flex className="app" flexDir='column' align='center' width='100%' bgImg={background} bgPosition="center"
+    <Flex className="app" flexDir='column' align='center' minHeight='100vh' width='100%' bgImg={background} bgPosition="center"
     bgRepeat="no-repeat"
     bgSize="cover">
               <Particles

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import UserGraph from './pages/UserGraph';
 import GraphsPage from './pages/GraphsPage';
 import Community from './pages/Community';
+import CommunityGraph from './pages/CommunityGraph';
 import {
     createBrowserRouter,
     RouterProvider,
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path:'/community',
     element: <Community/>
+  },
+  {
+    path:'/community/:user/:concept',
+    element: <CommunityGraph/>
   }
   ]);
 
