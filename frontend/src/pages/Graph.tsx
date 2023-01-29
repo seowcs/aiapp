@@ -111,8 +111,8 @@ function Graph() {
   console.log(graphData)
 
   return (
-
-  <Flex flexDirection='column' align='center'>
+ 
+ <Flex flexDirection='column' align='center'>
   <Navbar position='absolute'/>
 
   <Draggable onStop={((e,data)=>setOffsetPos({x:data.x, y:data.y}))}>
@@ -159,7 +159,7 @@ function Graph() {
   </Flex>
   </Draggable>
 
-  
+   
   
 
   <ForceGraph3D
