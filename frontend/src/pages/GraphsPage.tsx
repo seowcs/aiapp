@@ -1,24 +1,16 @@
-import React,{useState, useContext} from 'react'
+import {useState, useContext} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
 import {
   Flex,
   Heading,
   SimpleGrid,
-  VStack,
-  StackDivider,
   Input,
-  InputGroup,
-  InputLeftElement,
-  IconButton,
   Button,
   Link,
-  Select,
-  Box,
   HStack
 } from "@chakra-ui/react";
 import {useReadCypher} from 'use-neo4j'
-import { SearchIcon } from "@chakra-ui/icons";
 import background from '../assets/images/newbg.svg'
 import Navbar from '../components/Navbar';
 import ConceptCard from '../components/ConceptCard';
@@ -38,7 +30,7 @@ const GraphsPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const lastIndex = currentPage * postsPerPage
   const firstIndex = lastIndex - postsPerPage
-  const searchedArr = conceptsArr?.filter(c=> c.name.split('-')[1].toLowerCase().includes(searchTerm))
+  const searchedArr = conceptsArr?.filter(c=> c.name.split('-')[1].toLowerCase().includes(searchTerm.toLowerCase()))
   console.log(searchedArr)
   const pageArr = searchedArr?.slice(firstIndex, lastIndex)
 
@@ -55,13 +47,13 @@ const GraphsPage = () => {
       <Navbar/>
       <Flex width='90%' justify='space-between' mt={8} align='center'>
         <Heading color='	hsl(285, 100%, 70%)'><span style={{color:'whitesmoke'}}>Concept</span> Graphs</Heading> 
-        <Input placeholder='Concept Name' width='50%' variant='filled' color='whitesmoke' bgColor='whitesmoke' onChange={(e)=>setSearchTerm(e.target.value)}/>
+        
         <Link href='/graphs/all' textDecoration='none' _hover={{textDecoration:'none'}}><Button color='whitesmoke'  bgColor='blue'             border="2px"
               borderColor="#1F51FF">User Graph</Button></Link>
       </Flex>
+      <Input placeholder='Concept Name' width='50%' variant='filled' color='whitesmoke' mt={8} bgColor='whitesmoke' onChange={(e)=>setSearchTerm(e.target.value)}/>
       <SimpleGrid mt={8} columns={4} spacing={10}>
         {
-          //convert privacy from bool in neo4j to string
           pageArr?.map((c:any)=><ConceptCard id={c.id} name={c.name.split('-')[1]} privacy={c.private.toString()}
           onClick={()=>navigate(`/graphs/${c.name.split('-')[1]}`)}/>)
         }

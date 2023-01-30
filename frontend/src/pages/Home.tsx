@@ -3,13 +3,13 @@ import React, { useState, useEffect, useCallback, useRef, useContext} from 'reac
 import axios from 'axios';
 import { useQuill } from 'react-quilljs';
 import 'quill/dist/quill.bubble.css'; 
-import { Flex, Spacer, Text, Button, ButtonGroup, FormLabel, Input,
+import { Flex, Text, Button,FormLabel, Input,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay, useDisclosure, Checkbox, useCheckbox, Heading, Spinner  } from '@chakra-ui/react'
+  AlertDialogOverlay, useDisclosure, Checkbox,  Heading, Spinner  } from '@chakra-ui/react'
 import {FocusableElement} from '@chakra-ui/utils'
 import { RiUpload2Fill } from "react-icons/ri";
 import background from '../assets/images/newbg.svg'
@@ -21,7 +21,7 @@ import Navbar from '../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const {currentUser, token, currentConcept, setCurrentConcept} = useContext(AuthContext)
+  const {currentUser, token} = useContext(AuthContext)
   const [file, setFile] = useState<File | null>(null)
   const [parsedText, setParsedText] = useState(null)
   const [concept, setConcept] = useState<string|null>(null)
@@ -108,15 +108,10 @@ const Home = () => {
 
   const particlesLoaded = useCallback(
     async (container: Container | undefined) => {
-      await console.log(container);
+      
     },
     []
   );
-
-
-
-  console.log('user: ', currentUser)
-  console.log('token: ', token)
 
   return (
     <Flex className="app" flexDir='column' align='center' minHeight='100vh' width='100%' bgImg={background} bgPosition="center"
@@ -267,7 +262,7 @@ const Home = () => {
                 textAlign="center"
                 m="0"
               >
-                <Text size={["xs", "md", "lg", "xl", "2xl"]}>Choose File</Text>
+                <Text size={["xs", "md", "lg", "xl", "2xl"]}>Choose Image</Text>
               </FormLabel>
             </Button>
     <input

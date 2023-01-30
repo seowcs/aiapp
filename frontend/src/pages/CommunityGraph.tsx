@@ -6,7 +6,7 @@ import {Flex, Button, Text, Heading, IconButton, Box, Input, ListItem, List, Lis
 import { CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import Navbar from "../components/Navbar";
 import Draggable from 'react-draggable';
-import { AuthContext } from "../context/authContext";
+
 import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,8 +41,10 @@ interface graphNode  {
 }
 
 const CommunityGraph = () => {
-  const navigate = useNavigate()
+
   const params = useParams()
+  const user = params.user
+  const concept = params.concept
   
   const [mousePos, setMousePos] = useState({x:0,y:0});
   const [offsetPos, setOffsetPos] = useState({x:0,y:0});
@@ -55,12 +57,11 @@ const CommunityGraph = () => {
   const filteredConceptsArr = optionsConceptsArr.filter((c)=>
     c.toLowerCase().includes(graphSearchTerm))
 
-  const user = params.user
-  const concept = params.concept
 
-  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"}) RETURN (e)`
-  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
-  const conceptQuery = `MATCH (c:CONCEPT{name:"${user}-${concept}"}) RETURN c`
+
+  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}", private:false}) RETURN (e)`
+  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}", private:false})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
+  const conceptQuery = `MATCH (c:CONCEPT{name:"${user}-${concept}", private:false}) RETURN c`
   const nodes = useReadCypher(nodesQuery).records
   const edges = useReadCypher(edgesQuery).records
   const conceptObj = useReadCypher(conceptQuery)
@@ -68,7 +69,7 @@ const CommunityGraph = () => {
   useEffect(() => {
     if (conceptObj.records){
     setConceptText(conceptObj.records[0].get(0).properties.text)}
-  
+      
   }, [conceptObj])
 
   
@@ -102,10 +103,6 @@ const CommunityGraph = () => {
     nodes: nodesArr,
     links: edgesArr
   }
-
-  console.log(graphData)
-
-
 
   return (
     <Flex flexDirection='column' align='center'>

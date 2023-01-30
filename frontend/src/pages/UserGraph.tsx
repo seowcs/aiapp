@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import {useReadCypher} from 'use-neo4j'
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
@@ -39,7 +39,7 @@ interface graphNode  {
 
 
 const UserGraph = () => {
-  const {currentUser, token, currentConcept, setCurrentConcept,setSearchTerm} = useContext(AuthContext)
+  const {currentUser,setSearchTerm} = useContext(AuthContext)
 
   const navigate = useNavigate()
   const [mousePos, setMousePos] = useState({x:0,y:0});
@@ -67,7 +67,6 @@ const UserGraph = () => {
       const fullConcepts = n.properties.concepts
       const userConcepts = fullConcepts.filter((c:any)=>{
         const cArray = c.split('-')
-        //dont hardcode this
         return cArray[0] == user
       })
       let conceptNames = userConcepts.map((c:any)=>c.split('-')[1])
@@ -129,6 +128,7 @@ if (edgesRecords) {
         <Text textAlign='center' mt={6} mb={3}>Find other users that have {nodeName} in their graphs!</Text>
         <Button colorScheme='green' rightIcon={<ExternalLinkIcon/>} onClick={()=>{
           sessionStorage.setItem('communitySearchTerm', nodeName)
+          sessionStorage.setItem('communityChoice', 'Entity')
           setSearchTerm(nodeName)
           navigate('/community')}
           }>Community</Button>

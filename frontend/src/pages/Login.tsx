@@ -11,7 +11,6 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../context/authContext";
 
@@ -52,7 +51,6 @@ const Register = () => {
     
   };
 
-  console.log(input);
 
   return (
     <Center

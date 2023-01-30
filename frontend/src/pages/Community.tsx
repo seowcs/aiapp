@@ -1,4 +1,4 @@
-import React,{useState, useContext, useEffect} from 'react'
+import {useState, useContext} from 'react'
 import { Flex,Heading, InputGroup, InputRightElement, Input, IconButton, Select, SimpleGrid,
 HStack,Button } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons'
@@ -7,7 +7,7 @@ import CommunityCard from '../components/CommunityCard'
 import background from '../assets/images/newbg.svg'
 import {useReadCypher} from 'use-neo4j'
 import { AuthContext } from '../context/authContext'
-import { session } from 'neo4j-driver'
+
 import { useNavigate } from 'react-router-dom'
 
 const Community = () => {
@@ -19,8 +19,7 @@ const Community = () => {
   const conceptsRecords = useReadCypher(conceptsQuery).records
   const conceptsArr = conceptsRecords?.map((r)=>{return {name:r.get(0).properties.name.split('-')[1], user:r.get(0).properties.user
   }})
-  console.log(conceptsArr)
-  const arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+
   const [currentPage, setCurrentPage] = useState(1)
   const [postsPerPage, setPostsPerPage] = useState(8)
   
@@ -39,10 +38,10 @@ const Community = () => {
 
   const handleClick = () => {
     if (choice === 'Entity') {
-      sessionStorage.setItem('conceptsQuery',`MATCH (e:ENTITY{name:'${searchTerm}'})-[:EC]->(c:CONCEPT) RETURN (c)`)
+      sessionStorage.setItem('conceptsQuery',`MATCH (e:ENTITY{name:'${searchTerm}'})-[:EC]->(c:CONCEPT{private:false}) RETURN (c)`)
     }
     else if (choice === 'User') { 
-      sessionStorage.setItem('conceptsQuery',`MATCH (c:CONCEPT)-[:CU]->(u:USER{name:'${searchTerm}'}) RETURN (c)`)
+      sessionStorage.setItem('conceptsQuery',`MATCH (c:CONCEPT{private:false})-[:CU]->(u:USER{name:'${searchTerm}'}) RETURN (c)`)
     }
     sessionStorage.setItem('communitySearchTerm',searchTerm)
     sessionStorage.setItem('communityChoice', choice)

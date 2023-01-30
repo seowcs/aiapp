@@ -60,7 +60,6 @@ const Register = () => {
     
   };
 
-  console.log(input);
 
   return (
     <Center

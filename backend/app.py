@@ -1,10 +1,7 @@
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS, cross_origin
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 import pytesseract
 from PIL import Image
 from text_to_docred import TextInputToDocredPipeline
@@ -34,7 +31,7 @@ class GetText(object):
 
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+    data = request.get_json() 
     username = data['username']
     password = data['password']
     email = data['email']
@@ -105,9 +102,9 @@ def relation_extraction():
     for i in range(len(result['clusters'])):
         entity_idx = result['clusters'][i][0]
         newarr = arr[slice(entity_idx[0],entity_idx[1])]
-        entity = '_'.join(newarr)
+        entity = ' '.join(newarr)
         entity_list.append(entity)
-
+    print(entity_list)
     rsarray = result['relations']
     newarr = rsarray.copy()
     newrel = []
@@ -120,7 +117,7 @@ def relation_extraction():
         newrel.append(i)
     print(newrel)
     graph_query(graph,username,concept_name,private, document,entity_list,newrel)
-    return 'hi'
+    return 'Text Parsed',200
 
 if __name__ == '__main__':
     app.run(port=5000)

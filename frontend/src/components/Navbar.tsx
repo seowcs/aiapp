@@ -1,8 +1,8 @@
 import React,{useContext} from 'react'
-import {Flex,Text,Link} from '@chakra-ui/react'
+import {Flex,Text,Link, Icon} from '@chakra-ui/react'
 import { AuthContext } from '../context/authContext'
 import { useNavigate } from "react-router";
-
+import {FaUserCircle, FaUser} from 'react-icons/fa'
 const Navbar = ({position}:any) => {
   const {currentUser, logout} = useContext(AuthContext)
 
@@ -35,7 +35,7 @@ const Navbar = ({position}:any) => {
                 <Link href='/graphs'><Text fontWeight='500' color='whitesmoke'  _hover={{color:'lightgray'}}>Graphs</Text></Link>
                 <Link href='/community'><Text fontWeight='500' color='whitesmoke'  _hover={{color:'lightgray'}}>Community</Text></Link>
                 <Text cursor='pointer' fontWeight='500' color='whitesmoke' _hover={{color:'lightgray'}} onClick={handleLogout}>Logout</Text>
-                <Text color='hsl(285, 100%, 70%)'>{currentUser}</Text>
+                <Flex align='center'><Icon as={FaUser} boxSize={4} mr={2} color='whitesmoke'/><Text color='hsl(285, 100%, 70%)'>{currentUser}</Text></Flex>
                 </Flex>
         }
 

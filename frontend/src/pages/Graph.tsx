@@ -41,9 +41,11 @@ interface graphNode  {
 }
 
 function Graph() {
-  
+  const {currentUser,setSearchTerm} = useContext(AuthContext)
   const params = useParams()
-  console.log(params)
+  const user = currentUser
+  const concept = params.concept
+
   const navigate = useNavigate()
   const [mousePos, setMousePos] = useState({x:0,y:0});
   const [offsetPos, setOffsetPos] = useState({x:0,y:0});
@@ -55,13 +57,6 @@ function Graph() {
   const [nodeName, setNodeName] = useState('')
   const filteredConceptsArr = optionsConceptsArr.filter((c)=>
     c.toLowerCase().includes(graphSearchTerm))
-  //improve code
-
-
-  const {currentUser, token, currentConcept, setCurrentConcept,setSearchTerm} = useContext(AuthContext)
-
-  const user = currentUser
-  const concept = params.concept
 
   const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"}) RETURN (e)`
   const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
@@ -76,8 +71,6 @@ function Graph() {
   
   }, [conceptObj])
   
-
- 
   let nodes_arr:NodeObj[] = []
   if (nodes) {
     for (let i = 0; i < nodes.length; i++) {
@@ -109,7 +102,6 @@ function Graph() {
     links: edges_arr
   }
 
-  console.log(graphData)
 
   return (
  
@@ -151,6 +143,7 @@ function Graph() {
         <Text textAlign='center' mt={6} mb={3}>Find other users that have {nodeName} in their graphs!</Text>
         <Button colorScheme='green' rightIcon={<ExternalLinkIcon/>} onClick={()=>{
           sessionStorage.setItem('communitySearchTerm', nodeName)
+          sessionStorage.setItem('communityChoice', 'Entity')
           setSearchTerm(nodeName)
           navigate('/community')}
           }>Community</Button>
@@ -193,7 +186,6 @@ function Graph() {
     setShowOptions(true)
     setNodeName((node as graphNode).name)
   }}
-  
   
 />
 </Flex>
