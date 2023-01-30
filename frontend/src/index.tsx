@@ -15,7 +15,7 @@ root.render(
     <ChakraProvider>
      <AuthContextProvider>
      <App />
-     </AuthContextProvider>
+     </AuthContextProvider> 
     </ChakraProvider>
     </Neo4jProvider>
 

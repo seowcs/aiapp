@@ -7,7 +7,7 @@ import { CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import Navbar from "../components/Navbar";
 import Draggable from 'react-draggable';
 import { AuthContext } from "../context/authContext";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 interface NodeObj {
@@ -42,6 +42,8 @@ interface graphNode  {
 
 const CommunityGraph = () => {
   const navigate = useNavigate()
+  const params = useParams()
+  
   const [mousePos, setMousePos] = useState({x:0,y:0});
   const [offsetPos, setOffsetPos] = useState({x:0,y:0});
   const [showOptions, setShowOptions] = useState(false)
@@ -53,13 +55,12 @@ const CommunityGraph = () => {
   const filteredConceptsArr = optionsConceptsArr.filter((c)=>
     c.toLowerCase().includes(graphSearchTerm))
 
-  //change hardcode
-  const user = 'user2'
-  const concept = 'concept1'  
+  const user = params.user
+  const concept = params.concept
 
-  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'}) RETURN (e)`
-  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
-  const conceptQuery = `MATCH (c:CONCEPT{name:'${user}-${concept}'}) RETURN c`
+  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"}) RETURN (e)`
+  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
+  const conceptQuery = `MATCH (c:CONCEPT{name:"${user}-${concept}"}) RETURN c`
   const nodes = useReadCypher(nodesQuery).records
   const edges = useReadCypher(edgesQuery).records
   const conceptObj = useReadCypher(conceptQuery)
@@ -72,35 +73,34 @@ const CommunityGraph = () => {
 
   
  
-  let nodes_arr:NodeObj[] = []
+  let nodesArr:NodeObj[] = []
   if (nodes) {
     for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i].get(0)
     const fullConcepts = node.properties.concepts
     const userConcepts = fullConcepts.filter((c:any)=>{
       const cArray = c.split('-')
-      //dont hardcode this
-      return cArray[0] == 'User 1' 
+      return cArray[0] == user
     })
     let conceptNames = userConcepts.map((c:any)=>c.split('-')[1])
     
     const node_obj = {id:node.identity.low, name:node.properties.name, group:node.labels[0], concepts: conceptNames}
-    nodes_arr.push(node_obj)
+    nodesArr.push(node_obj)
   }
   }
 
-  let edges_arr:EdgeObj[] = []
+  let edgesArr:EdgeObj[] = []
   if (edges) {
     for (let i = 0; i < edges.length; i++){
       const edge = edges[i].get(0)
       const edge_obj = {source:edge.start.low, target:edge.end.low, name:edge.properties.name, color:'#39FF14'}
-      edges_arr.push(edge_obj)
+      edgesArr.push(edge_obj)
     }
   }
   
   const graphData = {
-    nodes: nodes_arr,
-    links: edges_arr
+    nodes: nodesArr,
+    links: edgesArr
   }
 
   console.log(graphData)
@@ -134,9 +134,9 @@ const CommunityGraph = () => {
   
         {option === 'concepts' && 
         <Flex flexDir='column' >
-          <Input size='sm' placeholder={`Search related concepts`} width='95%' mb={3} onChange={(e)=>setGraphSearchTerm(e.target.value)}/>
+          <Input size='sm' placeholder={`Search ${user} concepts`} width='95%' mb={3} onChange={(e)=>setGraphSearchTerm(e.target.value)}/>
         <List spacing={2}>
-          {filteredConceptsArr.map((c:any, index)=>(<ListItem key={index} color='blue'><ListIcon as={ExternalLinkIcon} color='blue'/><Link to='#'>{c}</Link></ListItem>))}
+          {filteredConceptsArr.map((c:any, index)=>(<ListItem key={index} color='blue'><ListIcon as={ExternalLinkIcon} color='blue'/><Link to={`/community/${user}/${c}`} onClick={window.location.reload}>{c}</Link></ListItem>))}
         </List>
       </Flex>}
   

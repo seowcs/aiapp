@@ -3,12 +3,13 @@ import {Card, CardHeader,CardFooter,CardBody, Heading, VStack, StackDivider, Tex
 import {FaUserCircle} from 'react-icons/fa'
 interface CommunityCardProps {
   name: string,
-  user: string
+  user: string,
+  onClick: () => void
 }
 
-const CommunityCard = ({name,user}: CommunityCardProps) => {
+const CommunityCard = ({name,user, onClick}: CommunityCardProps) => {
   return (
-    <Card bgColor='whitesmoke' width='240px'>
+    <Card bgColor='whitesmoke' width='240px' _hover={{bgColor:'lightgray'}} onClick={onClick}>
         <VStack divider={<StackDivider m={0} />} align='flex-start'>
         <CardHeader pb={2}><Heading size='md' >{name}</Heading></CardHeader>
         <CardFooter pt={1} >

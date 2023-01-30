@@ -11,7 +11,7 @@ from text_to_docred import TextInputToDocredPipeline
 from sgnlp.models.lsr import LsrModel, LsrConfig, LsrPreprocessor, LsrPostprocessor
 from py2neo import Graph, NodeMatcher
 from graphdb import graph_query
-graph = Graph("bolt://54.173.227.28:7687", auth=("neo4j", "purpose-accessories-crowds"))
+graph = Graph("neo4j+s://2db082e7.databases.neo4j.io:7687", auth=("neo4j", "seowcsneo4j"))
 matcher = NodeMatcher(graph)
 text2docred_pipeline = TextInputToDocredPipeline()
 

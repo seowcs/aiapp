@@ -9,7 +9,7 @@ import { Flex, Spacer, Text, Button, ButtonGroup, FormLabel, Input,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay, useDisclosure, Checkbox, useCheckbox  } from '@chakra-ui/react'
+  AlertDialogOverlay, useDisclosure, Checkbox, useCheckbox, Heading, Spinner  } from '@chakra-ui/react'
 import {FocusableElement} from '@chakra-ui/utils'
 import { RiUpload2Fill } from "react-icons/ri";
 import background from '../assets/images/newbg.svg'
@@ -18,6 +18,7 @@ import type { Container, Engine } from "tsparticles-engine";
 import { loadFull } from "tsparticles";
 import { AuthContext } from "../context/authContext";
 import Navbar from '../components/Navbar';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const {currentUser, token, currentConcept, setCurrentConcept} = useContext(AuthContext)
@@ -25,9 +26,14 @@ const Home = () => {
   const [parsedText, setParsedText] = useState(null)
   const [concept, setConcept] = useState<string|null>(null)
   const [privacy, setPrivacy] = useState(false)
+  const [uploadValue, setUploadValue] = useState(<Text size={["xs", "md", "lg", "xl", "2xl"]}>
+           
+  Upload
+
+</Text>)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement|FocusableElement>(null)
-
+  const navigate = useNavigate()
  
   const theme = 'bubble';
 
@@ -83,6 +89,7 @@ const Home = () => {
   const sendText = async () =>{
     const newText = quill.getText();
     console.log(newText);
+    setUploadValue(<Spinner/>)
     try {
       await axios.post('http://localhost:5000/extract',
       {'text':newText,
@@ -91,7 +98,8 @@ const Home = () => {
     } catch (error) {
       console.log(error)
     }
-    setCurrentConcept(concept)
+    
+    navigate(`/graphs/${concept}`)
   }
 
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -224,7 +232,12 @@ const Home = () => {
       
 
       <Navbar/>
-
+      
+      
+      
+      {currentUser != null && 
+      <>
+      <Heading mt={6} size='2xl' color='whitesmoke'><span style={{color:'hsl(285, 100%, 70%)'}}>G</span>raph<span style={{color:'hsl(285, 100%, 70%)'}}>N</span>et</Heading>
       <Flex align='flex-start' mt='60px' w='90%' justifyContent='center'>
 
         <Flex justify='center' mr='75px'>
@@ -323,6 +336,7 @@ const Home = () => {
       
     </div>
     <Checkbox size='lg' color='whitesmoke' onChange={(e)=>setPrivacy(e.target.checked)} mt={5}>Private</Checkbox>
+    
     <Button    
     justifyContent="center"
     alignSelf="center"
@@ -338,15 +352,65 @@ const Home = () => {
               border="2px"
               borderColor="#39FF14"
               onClick={sendText}
-            >              <Text size={["xs", "md", "lg", "xl", "2xl"]}>
-           
-              Upload
-           
-          </Text></Button>     
+
+            >              {uploadValue}</Button>     
     
       </Flex>
       
     </Flex>
+    </>}
+
+    {currentUser == null && 
+    <Flex  flexDir='column'  align='center' justify='center' >
+    <Heading mt='100px' size='3xl' color='whitesmoke'><span style={{color:'hsl(285, 100%, 70%)'}}>G</span>raph<span style={{color:'hsl(285, 100%, 70%)'}}>N</span>et</Heading>
+    <Flex flexDir='column' align='center'>
+      <Heading my={8} size='xl' color='whitesmoke' opacity='0.9' textShadow='-2px 2px hsl(285, 100%, 70%)' >Discover the connections you never knew</Heading>
+      <Link to='/register' ><Button    
+    justifyContent="center"
+    alignSelf="center"
+              bg="blue"
+              color="whitesmoke"
+              variant="solid"
+              size="2xl"
+              px={[6, 6, 6, 10]}
+              py={[2, 3, 4]}
+              mx="0"
+              mt={4}
+              mb={4}
+              border="2px"
+              borderColor="#1F51FF"
+              
+            >              <Text size={["xs", "md", "lg", "xl", "2xl"]}>
+           
+              Register
+           
+          </Text></Button> </Link>
+
+          <Link to='/login'>
+          <Button    
+    justifyContent="center"
+    alignSelf="center"
+              bg="green"
+              color="whitesmoke"
+              variant="solid"
+              size="2xl"
+              px={[6, 6, 6, 10]}
+              py={[2, 3, 4]}
+              mx="0"
+              mt={4}
+              mb={8}
+              border="2px"
+              borderColor="#39FF14"
+              
+            >              <Text size={["xs", "md", "lg", "xl", "2xl"]}>
+           
+              Login
+           
+          </Text></Button>
+          </Link> 
+    </Flex>
+    </Flex>
+    }
 
   </Flex>
     

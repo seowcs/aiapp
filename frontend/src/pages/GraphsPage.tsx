@@ -1,4 +1,6 @@
-import React,{useState} from 'react'
+import React,{useState, useContext} from 'react'
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/authContext';
 import {
   Flex,
   Heading,
@@ -21,8 +23,9 @@ import background from '../assets/images/newbg.svg'
 import Navbar from '../components/Navbar';
 import ConceptCard from '../components/ConceptCard';
 const GraphsPage = () => {
-  //change hardcode
-  const user = 'User 1'
+  const {currentUser} = useContext(AuthContext)
+  const navigate = useNavigate()
+  const user = currentUser
   const conceptsQuery = `MATCH (c:CONCEPT)-[:CU]->(u:USER{name:'${user}'}) RETURN c`
   const conceptsRecords = useReadCypher(conceptsQuery).records
   const conceptsArr = conceptsRecords?.map((r)=>{return {name:r.get(0).properties.name,private:r.get(0).properties.private, id:r.get(0).identity.low
@@ -30,13 +33,11 @@ const GraphsPage = () => {
   
   
 
-  const arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
   const [currentPage, setCurrentPage] = useState(1)
   const [postsPerPage, setPostsPerPage] = useState(8)
   const [searchTerm, setSearchTerm] = useState('')
   const lastIndex = currentPage * postsPerPage
   const firstIndex = lastIndex - postsPerPage
-  // fix this aft connecting to backend
   const searchedArr = conceptsArr?.filter(c=> c.name.split('-')[1].toLowerCase().includes(searchTerm))
   console.log(searchedArr)
   const pageArr = searchedArr?.slice(firstIndex, lastIndex)
@@ -61,7 +62,8 @@ const GraphsPage = () => {
       <SimpleGrid mt={8} columns={4} spacing={10}>
         {
           //convert privacy from bool in neo4j to string
-          pageArr?.map((c:any)=><ConceptCard id={c.id} name={c.name.split('-')[1]} privacy={c.private.toString()}/>)
+          pageArr?.map((c:any)=><ConceptCard id={c.id} name={c.name.split('-')[1]} privacy={c.private.toString()}
+          onClick={()=>navigate(`/graphs/${c.name.split('-')[1]}`)}/>)
         }
       
       

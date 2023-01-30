@@ -8,9 +8,10 @@ import background from '../assets/images/newbg.svg'
 import {useReadCypher} from 'use-neo4j'
 import { AuthContext } from '../context/authContext'
 import { session } from 'neo4j-driver'
-
+import { useNavigate } from 'react-router-dom'
 
 const Community = () => {
+  const navigate = useNavigate()
   const {conceptsQuery, setConceptsQuery, searchTerm, setSearchTerm} = useContext(AuthContext)
   
   setConceptsQuery(sessionStorage.getItem('conceptsQuery'))
@@ -70,7 +71,8 @@ const Community = () => {
         </Select>
       </Flex>
       <SimpleGrid spacing={10} columns={4}>
-      {pageArr?.map(c=> <CommunityCard name={c.name} user={c.user}/>)
+      {pageArr?.map(c=> <CommunityCard name={c.name} user={c.user}
+      onClick={()=>navigate(`/community/${c.user}/${c.name}`)}/>)
      }
 
       </SimpleGrid>

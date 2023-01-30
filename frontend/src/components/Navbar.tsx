@@ -19,7 +19,7 @@ const Navbar = ({position}:any) => {
       blur='10.5px' borderRadius='10px' border='1px solid rgba( 255, 255, 255, 0.18 )'
       mt='5' py='3' px='5' justify='space-between' zIndex='2' position={position}>
         <Flex>
-          <Text color='	hsl(285, 100%, 70%)'>GraphNet</Text>
+          <Text  fontWeight='600'  color='hsl(285, 100%, 70%)' >GraphNet</Text>
         </Flex>
         {!currentUser &&
         <Flex w='40%' justify='space-between'>  
@@ -35,6 +35,7 @@ const Navbar = ({position}:any) => {
                 <Link href='/graphs'><Text fontWeight='500' color='whitesmoke'  _hover={{color:'lightgray'}}>Graphs</Text></Link>
                 <Link href='/community'><Text fontWeight='500' color='whitesmoke'  _hover={{color:'lightgray'}}>Community</Text></Link>
                 <Text cursor='pointer' fontWeight='500' color='whitesmoke' _hover={{color:'lightgray'}} onClick={handleLogout}>Logout</Text>
+                <Text color='hsl(285, 100%, 70%)'>{currentUser}</Text>
                 </Flex>
         }
 

@@ -8,8 +8,7 @@ import { CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import Navbar from "../components/Navbar";
 import Draggable from 'react-draggable';
 import { AuthContext } from "../context/authContext";
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation,useParams } from 'react-router-dom';
 
 interface NodeObj {
   id: number,
@@ -42,7 +41,9 @@ interface graphNode  {
 }
 
 function Graph() {
-
+  
+  const params = useParams()
+  console.log(params)
   const navigate = useNavigate()
   const [mousePos, setMousePos] = useState({x:0,y:0});
   const [offsetPos, setOffsetPos] = useState({x:0,y:0});
@@ -58,13 +59,13 @@ function Graph() {
 
 
   const {currentUser, token, currentConcept, setCurrentConcept,setSearchTerm} = useContext(AuthContext)
-  //change the hardcode
-  const user = 'User 1'
-  const concept = 'Concept 3'
 
-  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'}) RETURN (e)`
-  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:'${user}-${concept}'})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
-  const conceptQuery = `MATCH (c:CONCEPT{name:'${user}-${concept}'}) RETURN c`
+  const user = currentUser
+  const concept = params.concept
+
+  const nodesQuery = `MATCH (e:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"}) RETURN (e)`
+  const edgesQuery = `MATCH (e1:ENTITY) -[:EC]->(c:CONCEPT{name:"${user}-${concept}"})<-[:EC]-(e2:ENTITY) MATCH (e1)-[r:EE]->(e2) return r`
+  const conceptQuery = `MATCH (c:CONCEPT{name:"${user}-${concept}"}) RETURN c`
   const nodes = useReadCypher(nodesQuery).records
   const edges = useReadCypher(edgesQuery).records
   const conceptObj = useReadCypher(conceptQuery)
@@ -84,8 +85,8 @@ function Graph() {
     const fullConcepts = node.properties.concepts
     const userConcepts = fullConcepts.filter((c:any)=>{
       const cArray = c.split('-')
-      //dont hardcode this
-      return cArray[0] == 'User 1' 
+      
+      return cArray[0] == user 
     })
     let conceptNames = userConcepts.map((c:any)=>c.split('-')[1])
     
@@ -141,7 +142,7 @@ function Graph() {
       <Flex flexDir='column' >
         <Input size='sm' placeholder='Search related concepts' width='95%' mb={3} onChange={(e)=>setGraphSearchTerm(e.target.value)}/>
       <List spacing={2}>
-        {filteredConceptsArr.map((c:any, index)=>(<ListItem key={index} color='blue'><ListIcon as={ExternalLinkIcon} color='blue'/><Link to='#'>{c}</Link></ListItem>))}
+        {filteredConceptsArr.map((c:string, index)=>(<ListItem key={index} color='blue'><ListIcon as={ExternalLinkIcon} color='blue'/><Link to={`/graphs/${c}`} onClick={window.location.reload}>{c}</Link></ListItem>))}
       </List>
     </Flex>}
 
